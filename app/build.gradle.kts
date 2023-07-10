@@ -1,10 +1,12 @@
+import com.android.build.gradle.internal.tasks.DexArchiveBuilderTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    id("org.jetbrains.kotlin.kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -21,6 +23,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "flickrApiKey", "\"${rootProject.findProperty("FLICKR_API_KEY")}\"")
     }
 
     buildTypes {
@@ -32,6 +36,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
@@ -56,6 +61,22 @@ kotlin {
     jvmToolchain(17)
 }
 
+private val ensureSecretsTask = tasks.register("ensureSecrets") {
+    group = "Build"
+    description = "Verify secrets have been specified for runtime functionality"
+
+    doLast {
+        val apiKey = rootProject.findProperty("FLICKR_API_KEY") as? String
+        if (apiKey.isNullOrBlank()) {
+            throw GradleException("You must specify FLICKR_API_KEY as a gradle property")
+        }
+    }
+}
+
+tasks.withType<DexArchiveBuilderTask> {
+    dependsOn(ensureSecretsTask)
+}
+
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions.allWarningsAsErrors = !properties.containsKey("android.injected.invoked.from.ide")
 }
@@ -65,7 +86,15 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.46.1")
 
     implementation("com.squareup.logcat:logcat:0.1")
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
+    implementation("com.squareup.moshi:moshi:1.15.0")
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2")
