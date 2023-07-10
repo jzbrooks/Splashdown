@@ -17,7 +17,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface Module {
+interface DataModule {
     @Binds
     fun bindImageRepository(imageRepository: ImageRepository): ImageDataSource
 
@@ -38,6 +38,7 @@ interface Module {
         fun moshi(): Moshi = Moshi.Builder().build()
 
         @Provides
+        @Singleton
         fun httpClient(): OkHttpClient {
             val builder = OkHttpClient.Builder()
 
