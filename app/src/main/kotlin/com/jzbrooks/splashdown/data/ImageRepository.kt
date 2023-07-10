@@ -13,7 +13,7 @@ import javax.inject.Singleton
 class ImageRepository @Inject constructor(
     private val flickrService: FlickerService,
 ): ImageDataSource {
-    override suspend fun getRecentPhotos(page: Long): PhotoResult {
+    override suspend fun getRecentPhotos(page: Int): PhotoResult {
         val recentPhotos = try {
             flickrService.getRecentPhotos(page)
         } catch (e: HttpException) {
@@ -33,7 +33,7 @@ class ImageRepository @Inject constructor(
         return PhotoResult.Success(recentPhotos.toPhotos())
     }
 
-    override suspend fun searchPhotos(query: String, page: Long): PhotoResult {
+    override suspend fun searchPhotos(query: String, page: Int): PhotoResult {
         val recentPhotos = try {
             flickrService.searchPhotos(query, page)
         } catch (e: HttpException) {
