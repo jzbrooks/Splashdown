@@ -26,7 +26,7 @@ class ImageSearchViewModel @Inject constructor(
     private var job: Job? = null
 
     init {
-        loadMore()
+        reload()
     }
 
     fun loadMore() {
@@ -43,19 +43,24 @@ class ImageSearchViewModel @Inject constructor(
     }
 
     fun reload() {
+        _state.update { it.copy(isLoading = true) }
         loadPhotos(emptyList(), 1)
     }
 
     private fun loadPhotos(existing: List<Photo>, page: Int) {
         job?.cancel()
         job = viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-
             val state = _state.value
-            when (val recentImages = dataSource.getRecentPhotos(page)) {
+            val images = if (!state.query.isNullOrBlank()) {
+                dataSource.searchPhotos(state.query, page)
+            } else {
+                dataSource.getRecentPhotos(page)
+            }
+
+            when (images) {
                 is PhotoResult.Success -> {
                     val newState = state.copy(
-                        photos = existing + recentImages.photos,
+                        photos = existing + images.photos,
                         isLoading = false,
                         nextPage = page + 1,
                     )
