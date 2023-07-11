@@ -30,7 +30,7 @@ class ImageSearchViewModel @Inject constructor(
             emptyList(),
             false,
             1,
-        )
+        ),
     )
 
     private var job: Job? = null
@@ -100,7 +100,8 @@ class ImageSearchViewModel @Inject constructor(
                 }
 
                 PhotoResult.Error.Deserialization,
-                PhotoResult.Error.Server -> _state.update {
+                PhotoResult.Error.Server,
+                -> _state.update {
                     it.copy(isLoading = false, error = Error.SERVER)
                 }
 
@@ -120,7 +121,7 @@ class ImageSearchViewModel @Inject constructor(
         val isLoading: Boolean,
         val nextPage: Int,
         val selectedPhoto: Photo? = null,
-        val error: Error? = null
+        val error: Error? = null,
     )
 
     enum class Error {

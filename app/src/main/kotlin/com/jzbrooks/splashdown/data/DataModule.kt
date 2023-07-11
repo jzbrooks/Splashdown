@@ -49,5 +49,4 @@ interface DataModule {
             return builder.build()
         }
     }
-
 }

@@ -18,7 +18,7 @@ class SuccessfulResultDataSource(
 }
 
 class FailureResultDataSource(
-    private val error: PhotoResult.Error = PhotoResult.Error.Unknown
+    private val error: PhotoResult.Error = PhotoResult.Error.Unknown,
 ) : ImageDataSource {
     override suspend fun getRecentPhotos(page: Int): PhotoResult {
         return error
@@ -48,4 +48,3 @@ class SwitcharooResultDataSource(
         }
     }
 }
-

@@ -67,7 +67,7 @@ import logcat.logcat
 fun ImageSearchScreen(
     it: PaddingValues,
     snackbarHostState: SnackbarHostState,
-    viewModel: ImageSearchViewModel = viewModel()
+    viewModel: ImageSearchViewModel = viewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -77,10 +77,10 @@ fun ImageSearchScreen(
     val gridState = rememberLazyGridState()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = state.isLoading,
-        onRefresh = viewModel::reload
+        onRefresh = viewModel::reload,
     )
     val bottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
+        skipPartiallyExpanded = true,
     )
 
     LaunchedEffect(state.nextPage) {
@@ -112,7 +112,7 @@ fun ImageSearchScreen(
                 ImageSearchViewModel.Error.NETWORK -> context.getString(R.string.error_network)
                 ImageSearchViewModel.Error.SERVER -> context.getString(R.string.error_server)
                 ImageSearchViewModel.Error.UNKNOWN -> context.getString(R.string.error_unknown)
-            }
+            },
         )
 
         if (result === SnackbarResult.Dismissed) {
@@ -124,7 +124,7 @@ fun ImageSearchScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .padding(it)
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
         OutlinedTextField(
             label = { Text(stringResource(R.string.hint_search_images)) },
@@ -134,7 +134,7 @@ fun ImageSearchScreen(
                 onSearch = {
                     viewModel.search()
                     focusManager.clearFocus()
-                }
+                },
             ),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Search,
@@ -154,17 +154,17 @@ fun ImageSearchScreen(
                         Icon(
                             imageVector = Icons.Outlined.Clear,
                             contentDescription = stringResource(R.string.description_clear_icon),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
-            }
+            },
         )
 
         Box(
             modifier = Modifier
                 .weight(1f)
-                .pullRefresh(pullRefreshState)
+                .pullRefresh(pullRefreshState),
         ) {
             LazyVerticalGrid(
                 state = gridState,
@@ -208,7 +208,7 @@ fun ImageSearchScreen(
                         Text(
                             selection.title,
                             style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(8.dp)
+                            modifier = Modifier.padding(8.dp),
                         )
                     }
 
@@ -245,7 +245,7 @@ fun ImageSearchScreenPreview() {
                 override suspend fun searchPhotos(query: String, page: Int): PhotoResult {
                     return PhotoResult.Success(emptyList())
                 }
-            })
+            }),
         )
     }
 }

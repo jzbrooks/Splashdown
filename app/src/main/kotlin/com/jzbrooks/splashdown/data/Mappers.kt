@@ -8,6 +8,6 @@ fun PhotosResponseDto.toPhotos(): List<Photo> = photos.photo.map {
         it.id,
         it.title,
         URI("https://live.staticflickr.com/${it.server}/${it.id}_${it.secret}_n.jpg"),
-        URI("https://live.staticflickr.com/${it.server}/${it.id}_${it.secret}_b.jpg")
+        URI("https://live.staticflickr.com/${it.server}/${it.id}_${it.secret}_b.jpg"),
     )
 }

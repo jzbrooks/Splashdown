@@ -25,9 +25,9 @@ object SuccessfulImageDataSource : FlickerService {
                         1,
                         0,
                         0,
-                    )
-                )
-            )
+                    ),
+                ),
+            ),
         )
     }
 
@@ -49,15 +49,15 @@ object SuccessfulImageDataSource : FlickerService {
                         1,
                         0,
                         0,
-                    )
-                )
-            )
+                    ),
+                ),
+            ),
         )
     }
 }
 
 class FailureFlickrService(
-    private val exceptionGenerator: () -> Exception
+    private val exceptionGenerator: () -> Exception,
 ) : FlickerService {
     override suspend fun getRecentPhotos(page: Int): PhotosResponseDto {
         throw exceptionGenerator()

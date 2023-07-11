@@ -60,14 +60,16 @@ class ImageRepositoryTest {
 
     @Test
     fun `recent photos failure - server`() = runTest {
-        val repository = ImageRepository(FailureFlickrService {
-            HttpException(
-                Response.error<Unit>(
-                    503,
-                    "Send help?".toResponseBody(),
-                ),
-            )
-        })
+        val repository = ImageRepository(
+            FailureFlickrService {
+                HttpException(
+                    Response.error<Unit>(
+                        503,
+                        "Send help?".toResponseBody(),
+                    ),
+                )
+            },
+        )
 
         val result = repository.getRecentPhotos(1)
 
@@ -107,14 +109,16 @@ class ImageRepositoryTest {
 
     @Test
     fun `search photos failure - server`() = runTest {
-        val repository = ImageRepository(FailureFlickrService {
-            HttpException(
-                Response.error<Unit>(
-                    503,
-                    "Send help?".toResponseBody(),
-                ),
-            )
-        })
+        val repository = ImageRepository(
+            FailureFlickrService {
+                HttpException(
+                    Response.error<Unit>(
+                        503,
+                        "Send help?".toResponseBody(),
+                    ),
+                )
+            },
+        )
 
         val result = repository.searchPhotos("decking", 1)
 

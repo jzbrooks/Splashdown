@@ -80,7 +80,7 @@ class ImageSearchViewModelTest {
     @Test
     fun `loading is signaled to view`() = runTest(StandardTestDispatcher()) {
         val viewModel = ImageSearchViewModel(
-            SuccessfulResultDataSource(photos, emptyList())
+            SuccessfulResultDataSource(photos, emptyList()),
         )
 
         val state = mutableListOf<ImageSearchViewModel.ViewState>()
@@ -118,7 +118,7 @@ class ImageSearchViewModelTest {
             .all {
                 prop("photos") { it.photos }.isEmpty()
                 prop("error") { it.error }.isEqualTo(ImageSearchViewModel.Error.NETWORK)
-        }
+            }
     }
 
     @Test
@@ -202,7 +202,7 @@ class ImageSearchViewModelTest {
         )
 
         val viewModel = ImageSearchViewModel(
-            SwitcharooResultDataSource(photos, secondList)
+            SwitcharooResultDataSource(photos, secondList),
         )
 
         advanceUntilIdle()
@@ -260,7 +260,7 @@ class ImageSearchViewModelTest {
         )
 
         val viewModel = ImageSearchViewModel(
-            SuccessfulResultDataSource(photos, searchResults)
+            SuccessfulResultDataSource(photos, searchResults),
         )
 
         advanceUntilIdle()
@@ -291,7 +291,7 @@ class ImageSearchViewModelTest {
         )
 
         val viewModel = ImageSearchViewModel(
-            SuccessfulResultDataSource(photos, searchResults)
+            SuccessfulResultDataSource(photos, searchResults),
         )
 
         viewModel.updateQuery("walnut")

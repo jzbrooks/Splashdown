@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @Singleton
 class ImageRepository @Inject constructor(
     private val flickrService: FlickerService,
-): ImageDataSource {
+) : ImageDataSource {
     override suspend fun getRecentPhotos(page: Int): PhotoResult {
         val recentPhotos = try {
             flickrService.getRecentPhotos(page)
