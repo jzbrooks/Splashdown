@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Splashdown</string>
+  <string name="error_network">Are you connected to the internet?</string>
+  <string name="error_server">There was a problem with our server.\nPlease try again later.</string>
+  <string name="error_unknown">There was an unanticipated error.\nPlease try again later.</string>
+  <string name="hint_search_images">Search Images</string>
 </resources>

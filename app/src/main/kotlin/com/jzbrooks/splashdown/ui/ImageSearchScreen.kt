@@ -29,13 +29,16 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.jzbrooks.splashdown.R
 import com.jzbrooks.splashdown.data.ImageDataSource
 import com.jzbrooks.splashdown.data.PhotoResult
 import com.jzbrooks.splashdown.ui.theme.SplashdownTheme
@@ -54,6 +57,7 @@ fun ImageSearchScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val pullRefreshState = rememberPullRefreshState(refreshing = state.isLoading, onRefresh = viewModel::reload)
     val gridState = rememberLazyGridState()
@@ -84,9 +88,9 @@ fun ImageSearchScreen(
 
         val result = snackbarHostState.showSnackbar(
             message = when (error) {
-                ImageSearchViewModel.Error.NETWORK -> "Are you connected to the internet?"
-                ImageSearchViewModel.Error.SERVER -> "There was a problem with our server.\nPlease try again later."
-                ImageSearchViewModel.Error.UNKNOWN -> "There was an unanticipated error.\nPlease try again later."
+                ImageSearchViewModel.Error.NETWORK -> context.getString(R.string.error_network)
+                ImageSearchViewModel.Error.SERVER -> context.getString(R.string.error_server)
+                ImageSearchViewModel.Error.UNKNOWN -> context.getString(R.string.error_unknown)
             }
         )
 
@@ -102,12 +106,12 @@ fun ImageSearchScreen(
             .fillMaxSize()
     ) {
         OutlinedTextField(
-            label = { Text("Search Images") },
-            value = state.query,
+            label = { Text(stringResource(R.string.hint_search_images)) },
+            value = state.pendingQuery,
             onValueChange = viewModel::updateQuery,
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    viewModel.reload()
+                    viewModel.search()
                     focusManager.clearFocus()
                 }
             ),

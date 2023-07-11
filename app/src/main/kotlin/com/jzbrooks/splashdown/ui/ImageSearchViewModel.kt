@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import logcat.LogPriority
+import logcat.logcat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +23,15 @@ class ImageSearchViewModel @Inject constructor(
     val state: StateFlow<ViewState>
         get() = _state
 
-    private val _state = MutableStateFlow(ViewState("", emptyList(), false, 1))
+    private val _state = MutableStateFlow(
+        ViewState(
+            "",
+            "",
+            emptyList(),
+            false,
+            1,
+        )
+    )
 
     private var job: Job? = null
 
@@ -35,7 +45,7 @@ class ImageSearchViewModel @Inject constructor(
     }
 
     fun updateQuery(query: String) {
-        _state.update { it.copy(query = query) }
+        _state.update { it.copy(pendingQuery = query) }
     }
 
     fun acknowledgeError() {
@@ -47,13 +57,27 @@ class ImageSearchViewModel @Inject constructor(
         loadPhotos(emptyList(), 1)
     }
 
+    fun search() {
+        _state.update { it.copy(isLoading = true, committedQuery = it.pendingQuery) }
+        loadPhotos(emptyList(), 1)
+    }
+
     private fun loadPhotos(existing: List<Photo>, page: Int) {
-        job?.cancel()
+        if (job != null) {
+            logcat(LogPriority.WARN) { "loadPhotos was called again before the next page loaded." }
+            return
+        }
+
+
         job = viewModelScope.launch {
             val state = _state.value
-            val images = if (!state.query.isNullOrBlank()) {
-                dataSource.searchPhotos(state.query, page)
+            val query = state.committedQuery
+
+            val images = if (query.isNotBlank()) {
+                logcat { "Loading page $page with query $query" }
+                dataSource.searchPhotos(query, page)
             } else {
+                logcat { "Loading page $page of recent images" }
                 dataSource.getRecentPhotos(page)
             }
 
@@ -82,10 +106,13 @@ class ImageSearchViewModel @Inject constructor(
                 }
             }
         }
+
+        job?.invokeOnCompletion { job = null }
     }
 
     data class ViewState(
-        val query: String,
+        val pendingQuery: String,
+        val committedQuery: String,
         val photos: List<Photo>,
         val isLoading: Boolean,
         val nextPage: Int,
