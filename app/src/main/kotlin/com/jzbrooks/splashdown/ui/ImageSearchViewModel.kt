@@ -72,7 +72,6 @@ class ImageSearchViewModel @Inject constructor(
             return
         }
 
-
         job = viewModelScope.launch {
             val state = _state.value
             val query = state.committedQuery
