@@ -18,11 +18,15 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -83,7 +87,7 @@ fun ImageSearchScreen(
         // while the grid was scrolled, we should
         // scroll back to the top for the first page
         // of search results.
-        if (state.nextPage == 2) {
+        if (state.nextPage == 2 && !state.isLoading) {
             gridState.animateScrollToItem(0)
         }
     }
@@ -136,6 +140,24 @@ fun ImageSearchScreen(
             ),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                if (state.pendingQuery.isNotEmpty()) {
+                    IconButton(
+                        onClick = {
+                            viewModel.updateQuery("")
+                            if (state.committedQuery.isNotBlank()) {
+                                viewModel.search()
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Clear,
+                            contentDescription = "Clear",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
         )
 
         Box(
@@ -146,6 +168,7 @@ fun ImageSearchScreen(
             LazyVerticalGrid(
                 state = gridState,
                 columns = GridCells.Fixed(3),
+                verticalArrangement = Arrangement.Top,
                 modifier = Modifier.fillMaxSize(),
             ) {
                 items(state.photos) {
