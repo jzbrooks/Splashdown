@@ -1,5 +1,7 @@
 package com.jzbrooks.splashdown.ui
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -18,13 +21,19 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +57,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import logcat.logcat
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ImageSearchScreen(
     it: PaddingValues,
@@ -59,8 +68,15 @@ fun ImageSearchScreen(
 
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    val pullRefreshState = rememberPullRefreshState(refreshing = state.isLoading, onRefresh = viewModel::reload)
+
     val gridState = rememberLazyGridState()
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = state.isLoading,
+        onRefresh = viewModel::reload
+    )
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
 
     LaunchedEffect(state.nextPage) {
         // In the event that searches happened
@@ -140,7 +156,11 @@ fun ImageSearchScreen(
                         modifier = Modifier
                             .padding(4.dp)
                             .fillMaxWidth()
-                            .aspectRatio(1f),
+                            .aspectRatio(1f)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = rememberRipple(),
+                            ) { viewModel.updateSelection(it) },
                     )
                 }
             }
@@ -150,6 +170,29 @@ fun ImageSearchScreen(
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter),
             )
+
+            val selection = state.selectedPhoto
+            if (selection != null) {
+                ModalBottomSheet(
+                    onDismissRequest = { viewModel.updateSelection(null) },
+                    sheetState = bottomSheetState,
+                ) {
+                    Text(
+                        selection.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    AsyncImage(
+                        model = selection.url.toASCIIString(),
+                        contentDescription = selection.title,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                    )
+                }
+            }
         }
     }
 }

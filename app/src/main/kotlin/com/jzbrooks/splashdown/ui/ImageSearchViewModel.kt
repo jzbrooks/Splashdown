@@ -62,6 +62,10 @@ class ImageSearchViewModel @Inject constructor(
         loadPhotos(emptyList(), 1)
     }
 
+    fun updateSelection(photo: Photo?) {
+        _state.update { it.copy(selectedPhoto = photo) }
+    }
+
     private fun loadPhotos(existing: List<Photo>, page: Int) {
         if (job != null) {
             logcat(LogPriority.WARN) { "loadPhotos was called again before the next page loaded." }
@@ -116,6 +120,7 @@ class ImageSearchViewModel @Inject constructor(
         val photos: List<Photo>,
         val isLoading: Boolean,
         val nextPage: Int,
+        val selectedPhoto: Photo? = null,
         val error: Error? = null
     )
 
