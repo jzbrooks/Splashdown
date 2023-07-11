@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.jzbrooks.splashdown.R
 import com.jzbrooks.splashdown.data.ImageDataSource
 import com.jzbrooks.splashdown.data.PhotoResult
@@ -152,7 +153,7 @@ fun ImageSearchScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Clear,
-                            contentDescription = "Clear",
+                            contentDescription = stringResource(R.string.description_clear_icon),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -173,7 +174,10 @@ fun ImageSearchScreen(
             ) {
                 items(state.photos) {
                     AsyncImage(
-                        model = it.url.toASCIIString(),
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(it.url.toASCIIString())
+                            .memoryCacheKey(it.id)
+                            .build(),
                         contentDescription = it.title,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -200,13 +204,19 @@ fun ImageSearchScreen(
                     onDismissRequest = { viewModel.updateSelection(null) },
                     sheetState = bottomSheetState,
                 ) {
-                    Text(
-                        selection.title,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(8.dp)
-                    )
+                    if (selection.title.isNotBlank()) {
+                        Text(
+                            selection.title,
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+
                     AsyncImage(
-                        model = selection.url.toASCIIString(),
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(selection.largeUrl.toASCIIString())
+                            .placeholderMemoryCacheKey(selection.id)
+                            .build(),
                         contentDescription = selection.title,
                         contentScale = ContentScale.Fit,
                         modifier = Modifier

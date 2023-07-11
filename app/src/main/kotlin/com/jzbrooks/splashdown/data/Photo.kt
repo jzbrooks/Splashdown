@@ -6,4 +6,5 @@ data class Photo(
     val id: String,
     val title: String,
     val url: URI,
+    val largeUrl: URI,
 )
