@@ -23,6 +23,11 @@ the app will not function without it. However, unit tests will run without the v
 
 ### Notes
 
+- There's a good deal of NSFW content coming back from the API. I discovered the `safe_search` option
+  on the search endpoint, but it appears the classification system doesn't catch much. I saw several
+  photos with a `safety_level` of 0 (via adding the `safety_level` extra to the get recents request)
+  but were not SFW. I tried to work around this in the recording in this document, but it wasn't perfect.
+  If you run the app, be prepared for the content the service returns.
 - I used an RC version of AGP, which I typically wouldn't do in a production environment.
   I keep Beta and Canary AS builds on my personal machine so I can try out new features. AGP
   support for Gradle's jvm toolchains is a nice new feature that is only recently supported.
@@ -49,3 +54,5 @@ the app will not function without it. However, unit tests will run without the v
 - Log calls are no-ops in release builds, but some mechanism for observability should be put in place
 - Paging is simple, but solid. It might be beneficial to consider jetpack paging's compose integration.
 - Figure out some way for the grid to be previewable with sample images in the layout inspector
+
+[A quick demo of the basics](https://drive.google.com/file/d/1ypGlD7MDLoH4l_NBPPQWIxuxi-u3pXsI/view?usp=sharing)
